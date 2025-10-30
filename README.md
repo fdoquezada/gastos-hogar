@@ -220,7 +220,7 @@ Las contribuciones son bienvenidas. Por favor:
 
 ## 📞 Contacto
 
-Para consultas o soporte, utiliza el formulario de contacto en la aplicación o abre un issue en el repositorio.
+Para consultas a fdoquezadapuno@gmail.com o soporte, utiliza el formulario de contacto en la aplicación o abre un issue en el repositorio.
 
 ---
 
