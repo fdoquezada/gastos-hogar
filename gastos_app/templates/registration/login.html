@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% load static %}
+{% block favicon %}
+    <link rel="icon" href="{% static './img/login.png' %}" type="image/x-icon">
+{% endblock %}
+
+{% block title %}Iniciar Sesión{% endblock %}
+
+{% block content %}
+<div class="container-fluid login-page">
+    <div class="row justify-content-center align-items-center min-vh-100">
+        <div class="col-md-5 col-lg-4">
+            <div class="card login-card shadow-lg">
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-4">🚀 Iniciar Sesión</h2>
+
+                    {% if form.errors %}
+                        <div class="alert alert-danger" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Tu nombre de usuario y contraseña no coinciden. Por favor, inténtalo de nuevo.
+                        </div>
+                    {% endif %}
+
+                    <form method="post">
+                        {% csrf_token %}
+
+                        {# Campo de usuario con clases Bootstrap #}
+                        <div class="mb-4">
+                            <label for="{{ form.username.id_for_label }}" class="form-label">
+                                <i class="fas fa-user me-2"></i>Usuario
+                            </label>
+                            <input type="text" 
+                                   name="{{ form.username.name }}" 
+                                   id="{{ form.username.id_for_label }}" 
+                                   class="form-control"
+                                   placeholder="Ingresa tu usuario"
+                                   required>
+                        </div>
+                        
+                        {# Campo de contraseña con clases Bootstrap #}
+                        <div class="mb-4">
+                            <label for="{{ form.password.id_for_label }}" class="form-label">
+                                <i class="fas fa-lock me-2"></i>Contraseña
+                            </label>
+                            <input type="password" 
+                                   name="{{ form.password.name }}" 
+                                   id="{{ form.password.id_for_label }}" 
+                                   class="form-control"
+                                   placeholder="Ingresa tu contraseña"
+                                   required>
+                        </div>
+
+                        <input type="hidden" name="next" value="{{ next }}">
+
+                        <button type="submit" class="btn login-btn w-100 py-3">
+                            <i class="fas fa-sign-in-alt me-2"></i>Ingresar
+                        </button>
+                    </form>
+
+                    <hr class="my-4">
+
+                    <div class="login-links text-center">
+                        <p class="mb-2">
+                            <a href="{% url 'password_reset' %}">
+                                <i class="fas fa-key me-1"></i>¿Olvidaste tu contraseña?
+                            </a>
+                        </p>
+                        <p class="mb-0">
+                            ¿No tienes cuenta? 
+                            <a href="{% url 'registro' %}">
+                                <i class="fas fa-user-plus me-1"></i>Regístrate
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+

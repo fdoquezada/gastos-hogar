@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h4>¿Eliminar Objetivo?</h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <strong>⚠️ Advertencia:</strong> Estás a punto de eliminar el objetivo 
+                    "<strong>{{ objetivo.nombre }}</strong>". Esta acción no se puede deshacer.
+                </div>
+                
+                <div class="alert alert-info">
+                    <strong>Información del objetivo:</strong><br>
+                    - Monto actual: ${{ objetivo.monto_actual }}<br>
+                    - Progreso: {{ objetivo.porcentaje_completado|floatformat:1 }}%
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-danger">Sí, Eliminar Objetivo</button>
+                        <a href="{% url 'objetivos' %}" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,275 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block favicon %}
+    <link rel="icon" href="{% static './img/dashboard.png' %}" type="image/x-icon">
+{% endblock %}
+{% block title %}Dashboard - Finanzas Personales{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Tarjetas de resumen -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Ingresos</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">${{ total_ingresos|floatformat:2 }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                Egresos</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">${{ total_egresos|floatformat:2 }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-arrow-down fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Ahorros</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">${{ total_ahorros|floatformat:2 }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-piggy-bank fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Balance</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">${{ balance_actual|floatformat:2 }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-balance-scale fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Acciones rápidas -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Acciones Rápidas</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'agregar_transaccion' %}" class="btn btn-primary btn-block">
+                                <i class="fas fa-plus"></i> Agregar Transacción
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'listar_transacciones' %}" class="btn btn-outline-primary btn-block">
+                                <i class="fas fa-list"></i> Ver Transacciones
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'presupuestos' %}" class="btn btn-outline-success btn-block">
+                                <i class="fas fa-chart-pie"></i> Presupuestos
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'objetivos' %}" class="btn btn-outline-info btn-block">
+                                <i class="fas fa-bullseye"></i> Objetivos
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenido principal en 2 columnas -->
+    <div class="row">
+        <!-- Columna izquierda -->
+        <div class="col-xl-8 col-lg-7">
+            <!-- Últimas transacciones -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Últimas Transacciones</h6>
+                </div>
+                <div class="card-body">
+                    {% if ultimas_transacciones %}
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover" width="100%" cellspacing="0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Tipo</th>
+                                    <th>Descripción</th>
+                                    <th>Categoría</th>
+                                    <th>Monto</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for transaccion in ultimas_transacciones %}
+                                <tr>
+                                    <td>{{ transaccion.fecha|date:"d/m/Y" }}</td>
+                                    <td>
+                                        <span class="badge {% if transaccion.tipo == 'INGRESO' %}bg-success{% elif transaccion.tipo == 'EGRESO' %}bg-danger{% else %}bg-info{% endif %}">
+                                            {{ transaccion.tipo }}
+                                        </span>
+                                    </td>
+                                    <td>{{ transaccion.descripcion|truncatewords:5 }}</td>
+                                    <td>{{ transaccion.categoria.nombre|default:"-" }}</td>
+                                    <td class="{% if transaccion.tipo == 'INGRESO' %}text-success{% elif transaccion.tipo == 'EGRESO' %}text-danger{% else %}text-info{% endif %}">
+                                        ${{ transaccion.monto|floatformat:2 }}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No hay transacciones recientes.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Gastos por categoría -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Gastos por Categoría - {{ mes_actual }}</h6>
+                </div>
+                <div class="card-body">
+                    {% if gastos_por_categoria %}
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover" width="100%" cellspacing="0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Categoría</th>
+                                    <th>Total Gastado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for gasto in gastos_por_categoria %}
+                                <tr>
+                                    <td>
+                                        <i class="fas fa-circle" style="color: {{ gasto.categoria__color|default:'#6c757d' }}"></i>
+                                        {{ gasto.categoria__nombre }}
+                                    </td>
+                                    <td class="text-danger">${{ gasto.total|floatformat:2 }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No hay gastos registrados este mes.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna derecha -->
+        <div class="col-xl-4 col-lg-5">
+            <!-- Ahorro por institución -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Ahorro por Institución</h6>
+                </div>
+                <div class="card-body">
+                    {% if ahorro_por_institucion %}
+                    <div class="list-group">
+                        {% for item in ahorro_por_institucion %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>{{ item.institucion_ahorro__nombre|default:"Sin institución" }}</span>
+                            <span class="badge bg-success rounded-pill">${{ item.total|floatformat:2 }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No hay ahorros registrados este mes.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Objetivos de ahorro -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Objetivos de Ahorro</h6>
+                </div>
+                <div class="card-body">
+                    {% if objetivos %}
+                    <div class="list-group">
+                        {% for objetivo in objetivos %}
+                        <div class="list-group-item">
+                            <h6 class="mb-1">{{ objetivo.nombre }}</h6>
+                            <div class="progress mb-2" style="height: 20px;">
+                                <div class="progress-bar {% if objetivo.completado %}bg-success{% elif objetivo.porcentaje_completado > 80 %}bg-warning{% else %}bg-info{% endif %}" 
+                                     style="width: {{ objetivo.porcentaje_completado }}%">
+                                    {{ objetivo.porcentaje_completado|floatformat:1 }}%
+                                </div>
+                            </div>
+                            <small class="text-muted">
+                                ${{ objetivo.monto_actual|floatformat:2 }} / ${{ objetivo.monto_objetivo|floatformat:2 }}
+                                - {{ objetivo.dias_restantes }} días restantes
+                            </small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No hay objetivos activos.</p>
+                    <a href="{% url 'objetivos' %}" class="btn btn-sm btn-outline-primary">Crear primer objetivo</a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Alertas -->
+            {% if alertas_count > 0 %}
+            <div class="card shadow mb-4 border-warning">
+                <div class="card-header py-3 bg-warning">
+                    <h6 class="m-0 font-weight-bold text-white">
+                        <i class="fas fa-bell"></i> Alertas
+                        <span class="badge bg-danger">{{ alertas_count }}</span>
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <p>Tienes {{ alertas_count }} alerta(s) sin leer.</p>
+                    <a href="{% url 'alertas' %}" class="btn btn-warning btn-sm">Ver Alertas</a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Agregar Font Awesome para los íconos -->
+<script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
+{% endblock %}

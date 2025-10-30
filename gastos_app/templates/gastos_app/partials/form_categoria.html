@@ -1,0 +1,139 @@
+<form id="formCategoria" method="post" action="{% url 'agregar_categoria_modal' %}">
+    {% csrf_token %}
+    
+    <div class="mb-3">
+        <label for="{{ form.nombre.id_for_label }}" class="form-label">Nombre</label>
+        {{ form.nombre }}
+        {% if form.nombre.errors %}
+        <div class="text-danger">
+            {% for error in form.nombre.errors %}
+            <small>{{ error }}</small>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="mb-3">
+        <label for="{{ form.tipo.id_for_label }}" class="form-label">Tipo</label>
+        {{ form.tipo }}
+        {% if form.tipo.errors %}
+        <div class="text-danger">
+            {% for error in form.tipo.errors %}
+            <small>{{ error }}</small>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="mb-3">
+        <label for="{{ form.color.id_for_label }}" class="form-label">Color</label>
+        <div class="input-group">
+            {{ form.color }}
+            <span class="input-group-text">
+                <i class="fas fa-palette"></i>
+            </span>
+        </div>
+        <div class="form-text">Selecciona un color para identificar esta categoría</div>
+        {% if form.color.errors %}
+        <div class="text-danger">
+            {% for error in form.color.errors %}
+            <small>{{ error }}</small>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="d-flex justify-content-end gap-2">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="submit" class="btn btn-primary" id="submitCategoria">
+            <i class="fas fa-save"></i> Guardar Categoría
+        </button>
+    </div>
+</form>
+
+<script>
+document.getElementById('formCategoria').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const form = this;
+    const submitButton = document.getElementById('submitCategoria');
+    const originalContent = submitButton.innerHTML;
+    
+    // Mostrar estado de carga
+    submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+    submitButton.disabled = true;
+    
+    // Crear FormData
+    const formData = new FormData(form);
+    
+    // Enviar via AJAX
+    fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',  // ← IMPORTANTE: Identifica como AJAX
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error en la respuesta del servidor');
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            // Mostrar mensaje de éxito
+            showSuccessMessage(data.message);
+            
+            // Cerrar modal después de 1.5 segundos
+            setTimeout(() => {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('modalCategoria'));
+                if (modal) {
+                    modal.hide();
+                }
+                // Recargar la página para actualizar los selects
+                window.location.reload();
+            }, 1500);
+        } else {
+            throw new Error('Error del servidor');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showErrorMessage('Error al guardar la categoría');
+        // Restaurar botón
+        submitButton.innerHTML = originalContent;
+        submitButton.disabled = false;
+    });
+});
+
+function showSuccessMessage(message) {
+    // Reemplazar el contenido del modal con mensaje de éxito
+    const modalBody = document.getElementById('modalCategoriaBody');
+    modalBody.innerHTML = `
+        <div class="text-center py-4">
+            <i class="fas fa-check-circle text-success fa-3x mb-3"></i>
+            <h5 class="text-success">¡Éxito!</h5>
+            <p>${message}</p>
+            <div class="spinner-border text-success mt-2" role="status">
+                <span class="visually-hidden">Actualizando...</span>
+            </div>
+        </div>
+    `;
+}
+
+function showErrorMessage(message) {
+    const modalBody = document.getElementById('modalCategoriaBody');
+    const existingAlert = modalBody.querySelector('.alert-danger');
+    
+    if (!existingAlert) {
+        const alert = document.createElement('div');
+        alert.className = 'alert alert-danger alert-dismissible fade show';
+        alert.innerHTML = `
+            <i class="fas fa-exclamation-triangle"></i> ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        modalBody.insertBefore(alert, modalBody.firstChild);
+    }
+}
+</script>

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Sesión Cerrada | Finanzas{% endblock %}
+
+{% block favicon %}
+    <link rel="icon" href="{% static './img/logout.png' %}" type="image/x-icon">
+{% endblock %}
+
+
+{% block content %}
+<div class="container-fluid login-page">  <!-- CAMBIÉ container mt-5 por container-fluid login-page -->
+    <div class="row justify-content-center align-items-center min-vh-100">  <!-- AGREGÉ align-items-center min-vh-100 -->
+        <div class="col-md-5 col-lg-4">
+            <div class="card login-card shadow-lg">  <!-- CAMBIÉ las clases de la card -->
+                <div class="card-body text-center">
+                    <h1 class="display-3 mb-4">👋</h1> 
+                    
+                    <h2 class="card-title mb-3">¡Sesión Cerrada!</h2>
+                    
+                    <p class="lead">Gracias por usar la aplicación. Tu sesión ha finalizado correctamente.</p>
+                    
+                    <hr class="my-4">
+                    
+                    <p>
+                        Redirigiendo a la página de inicio de sesión en <span id="countdown">3</span> segundos...
+                    </p>
+                    
+                    <div class="mt-4">
+                        <p>
+                            ¿Quieres ingresar de inmediato? 
+                            <a href="{% url 'login' %}" class="fw-bold text-primary">Iniciar Sesión</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script src="{% static 'js/logout_redirect.js' %}"></script>
+{% endblock scripts %}

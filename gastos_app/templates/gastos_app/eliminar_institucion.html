@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Eliminar Institución - Finanzas Personales{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4>🗑️ Eliminar Institución</h4>
+            </div>
+            <div class="card-body text-center">
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle fa-2x mb-3"></i>
+                    <h5>¿Estás seguro de que quieres eliminar esta institución?</h5>
+                    <p class="mb-2"><strong>{{ institucion.nombre }}</strong></p>
+                    {% if institucion.descripcion %}
+                    <p class="mb-3">{{ institucion.descripcion }}</p>
+                    {% endif %}
+                </div>
+
+                {% if transacciones_count > 0 %}
+                <div class="alert alert-danger">
+                    <i class="fas fa-times-circle"></i>
+                    No puedes eliminar esta institución porque tiene <strong>{{ transacciones_count }}</strong> transacciones asociadas.
+                </div>
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                        <a href="{% url 'instituciones_ahorro' %}" class="btn btn-secondary me-md-2">Cancelar</a>
+                        {% if transacciones_count == 0 %}
+                        <button type="submit" class="btn btn-danger">Sí, Eliminar</button>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

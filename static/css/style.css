@@ -1,0 +1,128 @@
+/* ==================== ESTILOS ESENCIALES SIN CONFLICTOS ==================== */
+
+/* 1. FONDO PARA LOGIN - MUY ESPECÍFICO */
+body .login-page {
+    background: linear-gradient(135deg, #667eea 0%, #9e86b6 100%);
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+}
+
+/* 2. FONDO PARA REGISTRO - MUY ESPECÍFICO */
+body .container.mt-5:has(.card.shadow-lg) {
+    background: linear-gradient(135deg, #667eea 0%, #9e86b6 100%);
+    min-height: 100vh;
+    margin: 0 !important;
+    padding: 20px !important;
+}
+
+/* 3. TARJETAS DE AUTH - SOLO LAS NECESARIAS */
+body .card.login-card,
+body .card.shadow-lg.p-3.mb-5.bg-white.rounded {
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    background: white;
+    margin: 20px 0;
+}
+
+/* 4. BOTÓN DE LOGIN ESPECÍFICO */
+body .btn.login-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 0.75rem;
+    color: white;
+    font-weight: 600;
+    padding: 12px;
+}
+
+body .btn.login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    color: white;
+}
+
+/* 5. BOTÓN DE REGISTRO ESPECÍFICO */
+body .btn-success[type="submit"] {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border: none;
+    border-radius: 0.75rem;
+    color: white;
+    font-weight: 600;
+    padding: 12px;
+}
+
+body .btn-success[type="submit"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+    color: white;
+}
+
+/* 6. FOOTER SIMPLIFICADO */
+.custom-footer {
+    background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+    color: white;
+    margin-top: auto;
+}
+
+.footer-links a {
+    color: #ecf0f1;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+    color: #3498db;
+}
+
+.social-icons a {
+    color: white;
+    font-size: 1.2rem;
+    margin: 0 10px;
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.social-icons a:hover {
+    transform: translateY(-3px);
+    color: #3498db;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.container-fluid.mt-4 {
+    flex: 1;
+}
+
+/* 7. RESPONSIVE BÁSICO */
+@media (max-width: 768px) {
+    body .login-page,
+    body .container.mt-5:has(.card.shadow-lg) {
+        padding: 10px;
+    }
+    
+    body .card.login-card,
+    body .card.shadow-lg.p-3.mb-5.bg-white.rounded {
+        margin: 10px 0;
+    }
+}
+/* Mejoras para modales */
+.modal-content {
+    border-radius: 1rem;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-bottom: none;
+    border-radius: 1rem 1rem 0 0;
+}
+
+.modal-header .btn-close {
+    filter: invert(1);
+}

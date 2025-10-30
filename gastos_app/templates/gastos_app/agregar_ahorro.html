@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4>Agregar Ahorro a: {{ objetivo.nombre }}</h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <strong>Progreso actual:</strong> ${{ objetivo.monto_actual }} / ${{ objetivo.monto_objetivo }}
+                    ({{ objetivo.porcentaje_completado|floatformat:1 }}%)
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="monto_agregar" class="form-label">Monto a agregar:</label>
+                        <input type="number" name="monto_agregar" class="form-control" step="0.01" min="0.01" required>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success">Agregar Ahorro</button>
+                        <a href="{% url 'objetivos' %}" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

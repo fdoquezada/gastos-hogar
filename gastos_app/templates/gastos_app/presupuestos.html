@@ -1,0 +1,515 @@
+{% extends 'base.html' %}
+
+{% block title %}Presupuestos Mensuales - Finanzas Personales{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4>📊 Presupuestos Mensuales - {{ mes_actual }}</h4>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalPresupuesto">
+                    <i class="fas fa-plus"></i> Nuevo Presupuesto
+                </button>
+            </div>
+            <div class="card-body">
+                <!-- Resumen rápido -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card bg-primary text-white">
+                            <div class="card-body text-center py-2">
+                                <h6>{{ presupuestos.count }}</h6>
+                                <small>Total Presupuestos</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-success text-white">
+                            <div class="card-body text-center py-2">
+                                <h6>{{ presupuestos_buen_estado.count }}</h6>
+                                <small>En Buen Estado</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-warning text-dark">
+                            <div class="card-body text-center py-2">
+                                <h6>{{ presupuestos_alerta.count }}</h6>
+                                <small>En Alerta</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-danger text-white">
+                            <div class="card-body text-center py-2">
+                                <h6>{{ presupuestos_excedidos.count }}</h6>
+                                <small>Excedidos</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lista de presupuestos -->
+                {% for presupuesto in presupuestos %}
+                <div class="budget-item mb-4 p-3 border rounded {% if presupuesto.porcentaje_uso > 100 %}border-danger{% elif presupuesto.porcentaje_uso > 80 %}border-warning{% endif %}">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="d-flex align-items-center">
+                            <span class="badge" style="background-color: {{ presupuesto.categoria.color }}; color: white; margin-right: 10px;">
+                                █
+                            </span>
+                            <h5 class="mb-0">{{ presupuesto.categoria.nombre }}</h5>
+                        </div>
+                        <div class="text-end">
+                            <strong>${{ presupuesto.monto_gastado|floatformat:0 }} / ${{ presupuesto.monto_presupuestado|floatformat:0 }}</strong>
+                            <br>
+                            <small class="text-muted">Restante: ${{ presupuesto.monto_restante|floatformat:0 }}</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Barra de progreso mejorada -->
+                    <div class="progress mb-2" style="height: 25px;">
+                        <div class="progress-bar {% if presupuesto.porcentaje_uso > 100 %}bg-danger{% elif presupuesto.porcentaje_uso > 80 %}bg-warning{% else %}bg-success{% endif %}" 
+                             style="width: {% if presupuesto.porcentaje_uso > 100 %}100{% else %}{{ presupuesto.porcentaje_uso }}{% endif %}%"
+                             data-bs-toggle="tooltip" 
+                             title="Gastado: ${{ presupuesto.monto_gastado|floatformat:0 }} | Presupuestado: ${{ presupuesto.monto_presupuestado|floatformat:0 }}">
+                            {{ presupuesto.porcentaje_uso|floatformat:1 }}%
+                        </div>
+                        {% if presupuesto.porcentaje_uso > 100 %}
+                        <div class="progress-bar bg-danger" style="width: {{ presupuesto.porcentaje_uso|add:"-100" }}%">
+                            +{{ presupuesto.porcentaje_uso|add:"-100"|floatformat:1 }}%
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Información adicional -->
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            {% if presupuesto.porcentaje_uso > 100 %}
+                            <span class="badge bg-danger">
+                                <i class="fas fa-exclamation-triangle"></i> Excedido en ${{ presupuesto.monto_excedido|floatformat:0 }}
+                            </span>
+                            {% elif presupuesto.porcentaje_uso > 80 %}
+                            <span class="badge bg-warning text-dark">
+                                <i class="fas fa-exclamation-circle"></i> Cerca del límite
+                            </span>
+                            {% else %}
+                            <span class="badge bg-success">
+                                <i class="fas fa-check-circle"></i> Bajo control
+                            </span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-outline-primary" onclick="verDetalles({{ presupuesto.id }})">
+                                <i class="fas fa-chart-bar"></i> Detalles
+                            </button>
+                            <button class="btn btn-outline-warning" onclick="editarPresupuesto({{ presupuesto.id }})">
+                                <i class="fas fa-edit"></i> Editar
+                            </button>
+                            <button class="btn btn-outline-danger" onclick="eliminarPresupuesto({{ presupuesto.id }})">
+                                <i class="fas fa-trash"></i> Eliminar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center py-5">
+                    <i class="fas fa-chart-pie fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">No hay presupuestos configurados</h5>
+                    <p class="text-muted">Comienza creando tu primer presupuesto para este mes</p>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalPresupuesto">
+                        <i class="fas fa-plus"></i> Crear Primer Presupuesto
+                    </button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar con estadísticas -->
+    <div class="col-md-4">
+        <!-- Resumen del mes -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6>📈 Resumen del Mes</h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-2">
+                    <small class="text-muted">Total Presupuestado:</small>
+                    <div class="fw-bold">${{ total_presupuestado|floatformat:0 }}</div>
+                </div>
+                <div class="mb-2">
+                    <small class="text-muted">Total Gastado:</small>
+                    <div class="fw-bold">${{ total_gastado|floatformat:0 }}</div>
+                </div>
+                <div class="mb-2">
+                    <small class="text-muted">Total Restante:</small>
+                    <div class="fw-bold text-success">${{ total_restante|floatformat:0 }}</div>
+                </div>
+                <hr>
+                <div>
+                    <small class="text-muted">Promedio de Uso:</small>
+                    <div class="fw-bold">{{ promedio_uso|floatformat:1 }}%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Categorías sin presupuesto -->
+        <div class="card">
+            <div class="card-header">
+                <h6>📋 Categorías sin Presupuesto</h6>
+            </div>
+            <div class="card-body">
+                {% for categoria in categorias_sin_presupuesto %}
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span>
+                        <span class="badge" style="background-color: {{ categoria.color }}; color: white;">█</span>
+                        {{ categoria.nombre }}
+                    </span>
+                    <button class="btn btn-sm btn-outline-primary" onclick="crearPresupuestoParaCategoria({{ categoria.id }})">
+                        <i class="fas fa-plus"></i> Presupuesto
+                    </button>
+                </div>
+                {% empty %}
+                <p class="text-muted text-center mb-0">
+                    <i class="fas fa-check-circle text-success"></i><br>
+                    Todas las categorías tienen presupuesto
+                </p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para nuevo presupuesto -->
+<!-- Modal para nuevo presupuesto - CORREGIDO -->
+<div class="modal fade" id="modalPresupuesto" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">➕ Nuevo Presupuesto</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <!-- MOVER el formulario FUERA del modal-body -->
+            <form method="post" id="formPresupuesto" action="{% url 'presupuestos' %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    {{ form.as_p }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Presupuesto</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- Modal para detalles -->
+<div class="modal fade" id="modalDetalles" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">📊 Detalles del Presupuesto</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="modalDetallesBody">
+                <!-- Contenido cargado dinámicamente -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para editar -->
+<div class="modal fade" id="modalEditar" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">✏️ Editar Presupuesto</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="modalEditarBody">
+                <!-- Formulario cargado dinámicamente -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts para funcionalidades -->
+<script>
+    console.log('🔍 DEBUG: JavaScript cargado correctamente');
+    
+    // ==================== FUNCIONES PRINCIPALES ====================
+    
+    function getCSRFToken() {
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
+        return csrfToken ? csrfToken.value : '';
+    }
+    
+    function showToast(title, message, type) {
+        console.log('🔍 DEBUG: Mostrando toast:', title, message);
+        
+        let toastContainer = document.getElementById('toastContainer');
+        if (!toastContainer) {
+            toastContainer = document.createElement('div');
+            toastContainer.id = 'toastContainer';
+            toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
+            toastContainer.style.zIndex = '9999';
+            document.body.appendChild(toastContainer);
+        }
+        
+        const toastId = 'toast-' + Date.now();
+        const bgColor = type === 'success' ? 'bg-success' : type === 'warning' ? 'bg-warning' : 'bg-danger';
+        const icon = type === 'success' ? 'fa-check-circle' : type === 'warning' ? 'fa-exclamation-triangle' : 'fa-exclamation-circle';
+        
+        const toastHTML = `
+            <div id="${toastId}" class="toast align-items-center text-white ${bgColor} border-0" role="alert">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <i class="fas ${icon} me-2"></i>
+                        <strong>${title}:</strong> ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            </div>
+        `;
+        
+        toastContainer.insertAdjacentHTML('beforeend', toastHTML);
+        
+        const toastElement = document.getElementById(toastId);
+        const toast = new bootstrap.Toast(toastElement, { delay: 4000 });
+        toast.show();
+        
+        toastElement.addEventListener('hidden.bs.toast', function () {
+            this.remove();
+        });
+    }
+    
+    // ==================== MANEJO DEL FORMULARIO PRINCIPAL ====================
+    
+    function handleFormSubmit(e) {
+        console.log('🔍 DEBUG: === INICIANDO ENVÍO AJAX ===');
+        e.preventDefault();
+        
+        const form = e.target;
+        const submitButton = form.querySelector('button[type="submit"]');
+        const originalText = submitButton.innerHTML;
+        
+        // Mostrar estado de carga
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+        submitButton.disabled = true;
+        
+        // Crear FormData
+        const formData = new FormData(form);
+        console.log('🔍 DEBUG: Enviando datos:', Object.fromEntries(formData.entries()));
+        
+        // Enviar por AJAX
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': getCSRFToken()
+            }
+        })
+        .then(response => {
+            console.log('🔍 DEBUG: Respuesta recibida - Status:', response.status);
+            return response.json();
+        })
+        .then(data => {
+            console.log('🔍 DEBUG: Respuesta JSON:', data);
+            
+            if (data.success) {
+                showToast('Éxito', data.message, 'success');
+                
+                // Cerrar modal y recargar
+                setTimeout(() => {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('modalPresupuesto'));
+                    if (modal) {
+                        modal.hide();
+                    }
+                    window.location.reload();
+                }, 1500);
+                
+            } else {
+                showToast('Error', data.message, 'error');
+                submitButton.innerHTML = originalText;
+                submitButton.disabled = false;
+                
+                // Mostrar errores de validación si existen
+                if (data.errors) {
+                    console.error('🔍 DEBUG: Errores de validación:', data.errors);
+                    // Aquí podrías mostrar los errores en el formulario
+                }
+            }
+        })
+        .catch(error => {
+            console.error('🔍 DEBUG: Error en la petición:', error);
+            showToast('Error', 'Error de conexión con el servidor', 'error');
+            submitButton.innerHTML = originalText;
+            submitButton.disabled = false;
+        });
+    }
+    
+    // ==================== INICIALIZACIÓN ====================
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('🔍 DEBUG: Inicializando aplicación...');
+        
+        // Configurar el formulario principal
+        const formPresupuesto = document.getElementById('formPresupuesto');
+        if (formPresupuesto) {
+            console.log('🔍 DEBUG: Formulario encontrado, configurando event listener');
+            formPresupuesto.addEventListener('submit', handleFormSubmit);
+        }
+        
+        // Configurar tooltips de Bootstrap
+        const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        tooltips.forEach(tooltip => new bootstrap.Tooltip(tooltip));
+        
+        console.log('🔍 DEBUG: Aplicación inicializada correctamente');
+    });
+    
+    // ==================== FUNCIONES DE PRESUPUESTOS ====================
+    
+    function verDetalles(presupuestoId) {
+        console.log('🔍 DEBUG: Abriendo detalles del presupuesto:', presupuestoId);
+        
+        const modalBody = document.getElementById('modalDetallesBody');
+        modalBody.innerHTML = `
+            <div class="text-center py-4">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Cargando...</span>
+                </div>
+                <p class="mt-2">Cargando detalles del presupuesto...</p>
+            </div>
+        `;
+        
+        const modal = new bootstrap.Modal(document.getElementById('modalDetalles'));
+        modal.show();
+        
+        fetch(`/presupuestos/detalles/${presupuestoId}/`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    mostrarDetallesPresupuesto(data);
+                } else {
+                    modalBody.innerHTML = `
+                        <div class="alert alert-danger">
+                            Error al cargar los detalles del presupuesto
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                modalBody.innerHTML = `
+                    <div class="alert alert-danger">
+                        Error de conexión
+                    </div>
+                `;
+            });
+    }
+    
+    function mostrarDetallesPresupuesto(data) {
+        const modalBody = document.getElementById('modalDetallesBody');
+        
+        modalBody.innerHTML = `
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>📊 Estadísticas</h6>
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <p><strong>Presupuestado:</strong> $${data.presupuesto.monto_presupuestado}</p>
+                            <p><strong>Gastado:</strong> $${data.presupuesto.monto_gastado}</p>
+                            <p><strong>Restante:</strong> $${data.presupuesto.monto_restante}</p>
+                            <p><strong>Porcentaje:</strong> ${data.presupuesto.porcentaje_uso}%</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h6>📈 Progreso</h6>
+                    <div class="progress mb-3" style="height: 25px;">
+                        <div class="progress-bar ${data.presupuesto.porcentaje_uso > 100 ? 'bg-danger' : data.presupuesto.porcentaje_uso > 80 ? 'bg-warning' : 'bg-success'}" 
+                             style="width: ${Math.min(data.presupuesto.porcentaje_uso, 100)}%">
+                            ${data.presupuesto.porcentaje_uso}%
+                        </div>
+                    </div>
+                    ${data.presupuesto.porcentaje_uso > 100 ? 
+                        `<div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle"></i> Excedido en $${data.presupuesto.monto_excedido}
+                        </div>` : 
+                        data.presupuesto.porcentaje_uso > 80 ?
+                        `<div class="alert alert-warning">
+                            <i class="fas fa-exclamation-circle"></i> Cerca del límite
+                        </div>` :
+                        `<div class="alert alert-success">
+                            <i class="fas fa-check-circle"></i> Bajo control
+                        </div>`
+                    }
+                </div>
+            </div>
+            
+            ${data.transacciones && data.transacciones.length > 0 ? `
+            <div class="mt-4">
+                <h6>💳 Transacciones Recientes</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Descripción</th>
+                                <th>Monto</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.transacciones.map(transaccion => `
+                                <tr>
+                                    <td>${transaccion.fecha}</td>
+                                    <td>${transaccion.descripcion}</td>
+                                    <td>$${transaccion.monto}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            ` : '<p class="text-muted">No hay transacciones para esta categoría este mes.</p>'}
+        `;
+    }
+    
+    function editarPresupuesto(presupuestoId) {
+        console.log('🔍 DEBUG: Editando presupuesto:', presupuestoId);
+        showToast('Información', 'La función de edición estará disponible pronto', 'warning');
+    }
+    
+    function eliminarPresupuesto(presupuestoId) {
+        console.log('🔍 DEBUG: Eliminando presupuesto:', presupuestoId);
+        if (confirm('¿Estás seguro de que quieres eliminar este presupuesto?')) {
+            showToast('Información', 'La función de eliminación estará disponible pronto', 'warning');
+        }
+    }
+    
+    function crearPresupuestoParaCategoria(categoriaId) {
+        console.log('🔍 DEBUG: Creando presupuesto para categoría:', categoriaId);
+        const categoriaSelect = document.getElementById('id_categoria');
+        if (categoriaSelect) {
+            categoriaSelect.value = categoriaId;
+        }
+        const modal = new bootstrap.Modal(document.getElementById('modalPresupuesto'));
+        modal.show();
+    }
+</script>
+
+<style>
+.budget-item {
+    transition: all 0.3s ease;
+}
+.budget-item:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+.progress-bar {
+    transition: width 0.5s ease;
+}
+</style>
+{% endblock %}

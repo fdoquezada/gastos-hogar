@@ -1,0 +1,121 @@
+<form id="formInstitucion" method="post" action="{% url 'agregar_institucion_modal' %}">
+    {% csrf_token %}
+    
+    <div class="mb-3">
+        <label for="{{ form.nombre.id_for_label }}" class="form-label">Nombre</label>
+        {{ form.nombre }}
+        {% if form.nombre.errors %}
+        <div class="text-danger">
+            {% for error in form.nombre.errors %}
+            <small>{{ error }}</small>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="mb-3">
+        <label for="{{ form.descripcion.id_for_label }}" class="form-label">Descripción (opcional)</label>
+        {{ form.descripcion }}
+        {% if form.descripcion.errors %}
+        <div class="text-danger">
+            {% for error in form.descripcion.errors %}
+            <small>{{ error }}</small>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="d-flex justify-content-end gap-2">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="submit" class="btn btn-primary" id="submitInstitucion">
+            <i class="fas fa-save"></i> Guardar Institución
+        </button>
+    </div>
+</form>
+
+<script>
+document.getElementById('formInstitucion').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const form = this;
+    const submitButton = document.getElementById('submitInstitucion');
+    const originalContent = submitButton.innerHTML;
+    
+    // Mostrar estado de carga
+    submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+    submitButton.disabled = true;
+    
+    // Crear FormData
+    const formData = new FormData(form);
+    
+    // Enviar via AJAX
+    fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',  // ← IMPORTANTE: Identifica como AJAX
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error en la respuesta del servidor');
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            // Mostrar mensaje de éxito
+            showSuccessMessage(data.message);
+            
+            // Cerrar modal después de 1.5 segundos
+            setTimeout(() => {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('modalInstitucion'));
+                if (modal) {
+                    modal.hide();
+                }
+                // Recargar la página para actualizar los selects
+                window.location.reload();
+            }, 1500);
+        } else {
+            throw new Error('Error del servidor');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showErrorMessage('Error al guardar la institución');
+        // Restaurar botón
+        submitButton.innerHTML = originalContent;
+        submitButton.disabled = false;
+    });
+});
+
+function showSuccessMessage(message) {
+    // Reemplazar el contenido del modal con mensaje de éxito
+    const modalBody = document.getElementById('modalInstitucionBody');
+    modalBody.innerHTML = `
+        <div class="text-center py-4">
+            <i class="fas fa-check-circle text-success fa-3x mb-3"></i>
+            <h5 class="text-success">¡Éxito!</h5>
+            <p>${message}</p>
+            <div class="spinner-border text-success mt-2" role="status">
+                <span class="visually-hidden">Actualizando...</span>
+            </div>
+        </div>
+    `;
+}
+
+function showErrorMessage(message) {
+    const modalBody = document.getElementById('modalInstitucionBody');
+    const existingAlert = modalBody.querySelector('.alert-danger');
+    
+    if (!existingAlert) {
+        const alert = document.createElement('div');
+        alert.className = 'alert alert-danger alert-dismissible fade show';
+        alert.innerHTML = `
+            <i class="fas fa-exclamation-triangle"></i> ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        modalBody.insertBefore(alert, modalBody.firstChild);
+    }
+}
+</script>

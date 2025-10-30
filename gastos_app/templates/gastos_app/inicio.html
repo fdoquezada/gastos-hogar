@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Finanzas Simples y Efectivas{% endblock %}
+
+{% block content %}
+<header class="p-5 text-center bg-light">
+    <div class="container">
+        <h1 class="display-4 fw-bold">Toma el Control de tus Finanzas 💰</h1>
+        <p class="lead">
+            La herramienta más sencilla para registrar tus ingresos, gastos y objetivos de ahorro.
+        </p>
+        
+        <a href="{% url 'login' %}" class="btn btn-success btn-lg me-2">Iniciar Sesión</a>
+        {# Si tienes una vista de registro, agrégala aquí #}
+        {# <a href="{% url 'registro' %}" class="btn btn-outline-primary btn-lg">Crear Cuenta</a> #}
+    </div>
+</header>
+
+<section class="container mt-5 mb-5">
+    <div class="row text-center">
+        <div class="col-md-4">
+            <div class="p-3">
+                <h3 class="fw-bold">📊 Dashboard Intuitivo</h3>
+                <p>Visualiza tu balance, gastos por categoría y progreso de objetivos en tiempo real.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-3">
+                <h3 class="fw-bold">✅ Gestión de Presupuestos</h3>
+                <p>Establece límites de gasto mensuales y recibe alertas antes de excederte.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-3">
+                <h3 class="fw-bold">🎯 Objetivos de Ahorro</h3>
+                <p>Motívate viendo el progreso de tu ahorro para ese gran viaje o compra.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="bg-primary text-white p-5 text-center">
+    <div class="container">
+        <h2 class="mb-4">Listo para empezar?</h2>
+        <a href="{% url 'login' %}" class="btn btn-warning btn-lg">¡Ingresar ahora!</a>
+    </div>
+</section>
+
+{% endblock content %}

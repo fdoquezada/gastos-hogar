@@ -1,0 +1,327 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Finanzas Personales{% endblock %}</title>
+    {% block favicon %}
+        <link rel="icon" href="{% static 'img/home.png' %}" type="image/x-icon">
+    {% endblock %}
+    <link rel="stylesheet" type="text/css" href="{% static './css/style.css' %}" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <style>
+        /* Estilos para el footer simplificado */
+        .custom-footer {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            margin-top: auto;
+        }
+        
+        .footer-links a {
+            color: #ecf0f1;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-links a:hover {
+            color: #3498db;
+        }
+        
+        .social-icons a {
+            color: white;
+            font-size: 1.2rem;
+            margin: 0 10px;
+            transition: transform 0.3s ease, color 0.3s ease;
+        }
+        
+        .social-icons a:hover {
+            transform: translateY(-3px);
+            color: #3498db;
+        }
+        
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        .container-fluid.mt-4 {
+            flex: 1;
+        }
+
+        /* Mejoras para modales */
+        .modal-content {
+            border-radius: 1rem;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom: none;
+            border-radius: 1rem 1rem 0 0;
+        }
+
+        .modal-header .btn-close {
+            filter: invert(1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'dashboard' %}">💰 Mis Finanzas</a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'agregar_transaccion' %}">Agregar Transacción</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'listar_transacciones' %}">Transacciones</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'presupuestos' %}">Presupuestos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'objetivos' %}">Objetivos</a>
+                    </li>
+                </ul>
+
+                <ul class="navbar-nav">
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'alertas' %}">
+                            Alertas {% if alertas_count > 0 %}
+                            <span class="badge bg-danger">{{ alertas_count }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            {{ user.username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="{% url 'admin:index' %}">Admin</a>
+                            </li>
+                            <li><hr class="dropdown-divider" /></li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'logout' %}">Cerrar Sesión</a>
+                            </li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">Iniciar Sesión</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido principal -->
+    <div class="container-fluid mt-4">
+        {% if messages %} 
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %} 
+        {% endif %} 
+        {% block content %} {% endblock %}
+    </div>
+
+    <!-- Modal para crear categoría -->
+    <div class="modal fade" id="modalCategoria" tabindex="-1" aria-labelledby="modalCategoriaLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalCategoriaLabel">➕ Nueva Categoría</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modalCategoriaBody">
+                    <!-- El formulario se cargará aquí via AJAX -->
+                    <div class="text-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para crear institución -->
+    <div class="modal fade" id="modalInstitucion" tabindex="-1" aria-labelledby="modalInstitucionLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalInstitucionLabel">🏦 Nueva Institución</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modalInstitucionBody">
+                    <!-- El formulario se cargará aquí via AJAX -->
+                    <div class="text-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% block scripts %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{% static './js/main.js' %}"></script>
+    
+    <!-- Script para manejar modales -->
+    <script>
+        // Función para abrir modal de categoría
+        function abrirModalCategoria() {
+            console.log('Abriendo modal de categoría...');
+            fetch("{% url 'agregar_categoria_modal' %}")
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error en la respuesta del servidor');
+                    }
+                    return response.text();
+                })
+                .then(html => {
+                    document.getElementById('modalCategoriaBody').innerHTML = html;
+                    var modalElement = document.getElementById('modalCategoria');
+                    var modal = new bootstrap.Modal(modalElement);
+                    modal.show();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('modalCategoriaBody').innerHTML = 
+                        '<div class="alert alert-danger">Error al cargar el formulario. Verifica que la URL esté correcta.</div>';
+                });
+        }
+
+        // Función para abrir modal de institución
+        function abrirModalInstitucion() {
+            console.log('Abriendo modal de institución...');
+            fetch("{% url 'agregar_institucion_modal' %}")
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error en la respuesta del servidor');
+                    }
+                    return response.text();
+                })
+                .then(html => {
+                    document.getElementById('modalInstitucionBody').innerHTML = html;
+                    var modalElement = document.getElementById('modalInstitucion');
+                    var modal = new bootstrap.Modal(modalElement);
+                    modal.show();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('modalInstitucionBody').innerHTML = 
+                        '<div class="alert alert-danger">Error al cargar el formulario. Verifica que la URL esté correcta.</div>';
+                });
+        }
+
+        // Función para cerrar modal y recargar la página (actualizar selects)
+        function cerrarModalYRecargar() {
+            // Cerrar todos los modales
+            var modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                var bsModal = bootstrap.Modal.getInstance(modal);
+                if (bsModal) bsModal.hide();
+            });
+            
+            // Recargar la página después de un breve delay
+            setTimeout(() => {
+                window.location.reload();
+            }, 500);
+        }
+
+        // Inicializar tooltips
+        document.addEventListener('DOMContentLoaded', function() {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+    </script>
+    {% endblock %}
+
+    <!-- Footer -->
+    <footer class="custom-footer py-4 mt-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <!-- Información del desarrollador -->
+                <div class="col-md-6 mb-3 mb-md-0">
+                    <h6 class="fw-bold mb-2">💰 Mis Finanzas</h6>
+                    <p class="mb-0 small">Desarrollado por Fernando Q. - Full Stack Developer</p>
+                </div>
+                
+                <!-- Enlaces rápidos -->
+                <div class="col-md-3 mb-3 mb-md-0 footer-links">
+                    <div class="d-flex flex-column">
+                        <a href="{% url 'dashboard' %}" class="mb-1">Dashboard</a>
+                        <a href="{% url 'contacto:contacto' %}" class="mb-1">Contacto</a>
+                        <a href="#" class="mb-1">Ayuda</a>
+                    </div>
+                </div>
+                
+                <!-- Redes sociales -->
+                <div class="col-md-3 text-center text-md-end social-icons">
+                    <a href="https://www.facebook.com/audas69" target="_blank" title="Facebook">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="https://x.com/Ferna_andr" target="_blank" title="Twitter">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="https://www.instagram.com/elferna_2/" target="_blank" title="Instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/in/fernandoquezadapuno/" target="_blank" title="LinkedIn">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                    <a href="https://github.com/fdoquezada" target="_blank" title="GitHub">
+                        <i class="fab fa-github"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <hr class="my-3" style="border-color: rgba(255,255,255,0.1);">
+            
+            <!-- Copyright -->
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start">
+                    <small class="text-light">
+                        <i class="fas fa-map-marker-alt me-1"></i>Valparaíso, Chile
+                    </small>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <small>
+                        © 2025 
+                        <a href="https://github.com/fdoquezada" class="text-light text-decoration-none fw-bold">
+                            Fernando Q.
+                        </a>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

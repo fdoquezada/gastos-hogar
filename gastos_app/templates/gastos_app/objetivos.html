@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <!-- Formulario para crear nuevo objetivo -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Crear Nuevo Objetivo</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    {% if form.errors %}
+                    <div class="alert alert-danger">
+                        <strong>Errores en el formulario:</strong>
+                        <ul>
+                        {% for field, errors in form.errors.items %}
+                            {% for error in errors %}
+                            <li>{{ field }}: {{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <label for="{{ form.nombre.id_for_label }}" class="form-label">Nombre del Objetivo</label>
+                        {{ form.nombre }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.descripcion.id_for_label }}" class="form-label">Descripción</label>
+                        {{ form.descripcion }}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.monto_objetivo.id_for_label }}" class="form-label">Monto Objetivo ($)</label>
+                                {{ form.monto_objetivo }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.fecha_objetivo.id_for_label }}" class="form-label">Fecha Límite</label>
+                                {{ form.fecha_objetivo }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.institucion_ahorro.id_for_label }}" class="form-label">Institución de Ahorro</label>
+                        {{ form.institucion_ahorro }}
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Crear Objetivo</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de objetivos existentes -->
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4>Mis Objetivos de Ahorro</h4>
+            </div>
+            <div class="card-body">
+                {% for objetivo in objetivos %}
+                <div class="card mb-3 {% if objetivo.completado %}border-success{% endif %}">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h5 class="card-title">{{ objetivo.nombre }}</h5>
+                                <p class="card-text text-muted">{{ objetivo.descripcion }}</p>
+                            </div>
+                            {% if objetivo.completado %}
+                            <span class="badge bg-success">Completado</span>
+                            {% else %}
+                            <span class="badge bg-warning">En progreso</span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="progress mb-2" style="height: 25px;">
+                            <div class="progress-bar {% if objetivo.completado %}bg-success{% elif objetivo.porcentaje_completado > 80 %}bg-warning{% else %}bg-primary{% endif %}" 
+                                 style="width: {{ objetivo.porcentaje_completado }}%">
+                                {{ objetivo.porcentaje_completado|floatformat:1 }}%
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <small class="text-muted">
+                                    <strong>Progreso:</strong> ${{ objetivo.monto_actual }} / ${{ objetivo.monto_objetivo }}
+                                </small>
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <small class="text-muted">
+                                    <strong>Días restantes:</strong> 
+                                    {% if objetivo.dias_restantes > 0 %}
+                                        {{ objetivo.dias_restantes }}
+                                    {% else %}
+                                        <span class="text-danger">Tiempo agotado</span>
+                                    {% endif %}
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-2">
+                            <small class="text-muted">
+                                <strong>Institución:</strong> {{ objetivo.institucion_ahorro.nombre }}
+                                {% if objetivo.fecha_objetivo %}
+                                | <strong>Fecha límite:</strong> {{ objetivo.fecha_objetivo|date:"d/m/Y" }}
+                                {% endif %}
+                            </small>
+                        </div>
+
+                        <!-- Botones de acción -->
+                        <div class="mt-3">
+                            <a href="{% url 'agregar_ahorro_objetivo' objetivo.id %}" class="btn btn-sm btn-outline-success">
+                                Agregar Ahorro
+                            </a>
+                            <a href="{% url 'editar_objetivo' objetivo.id %}" class="btn btn-sm btn-outline-primary">
+                                Editar
+                            </a>
+                            <a href="{% url 'eliminar_objetivo' objetivo.id %}" class="btn btn-sm btn-outline-danger">
+                                Eliminar
+                            </a>
+                        </div>
+                {% empty %}
+                <div class="text-center text-muted py-4">
+                    <p>No hay objetivos de ahorro configurados.</p>
+                    <p>¡Crea tu primer objetivo usando el formulario!</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
