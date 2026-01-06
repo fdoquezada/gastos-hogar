@@ -9,6 +9,7 @@ urlpatterns = [
     
     # Dashboard y transacciones
     path('dashboard/', views.dashboard, name='dashboard'),  # ⬅️ CORREGIDO: "dashboard" no "dashoard"
+    path('grafico-gastos/', views.grafico_gastos_categoria, name='grafico_gastos_categoria'),
     path('agregar/', views.agregar_transaccion, name='agregar_transaccion'),
     path('transacciones/', views.listar_transacciones, name='listar_transacciones'),
     path('editar/<int:id>/', views.editar_transaccion, name='editar_transaccion'),
@@ -48,6 +49,10 @@ urlpatterns = [
     path('api/estadisticas/', views.api_estadisticas, name='api_estadisticas'),
 
     # URLs para modales
-path('categorias/agregar/modal/', views.agregar_categoria_modal, name='agregar_categoria_modal'),
-path('instituciones/agregar/modal/', views.agregar_institucion_modal, name='agregar_institucion_modal'),
+    path('categorias/agregar/modal/', views.agregar_categoria_modal, name='agregar_categoria_modal'),
+    path('categorias/eliminar/ajax/<int:categoria_id>/', views.eliminar_categoria_ajax, name='eliminar_categoria_ajax'),
+    path('categorias/gestionar/modal/', views.gestionar_categorias_modal, name='gestionar_categorias_modal'),
+    path('instituciones/agregar/modal/', views.agregar_institucion_modal, name='agregar_institucion_modal'),
+    path('instituciones/eliminar/ajax/<int:institucion_id>/', views.eliminar_institucion_ajax, name='eliminar_institucion_ajax'),
+    path('instituciones/gestionar/modal/', views.gestionar_instituciones_modal, name='gestionar_instituciones_modal'),
 ]

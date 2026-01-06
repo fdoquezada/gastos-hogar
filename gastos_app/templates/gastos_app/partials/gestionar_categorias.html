@@ -1,0 +1,188 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="mb-0">📋 Gestionar Categorías</h5>
+    <button type="button" class="btn btn-sm btn-primary" onclick="abrirModalCategoria()">
+        <i class="fas fa-plus"></i> Nueva Categoría
+    </button>
+</div>
+
+{% if categorias %}
+<div class="list-group">
+    {% for categoria in categorias %}
+    <div class="list-group-item d-flex justify-content-between align-items-center" id="categoria-{{ categoria.id }}">
+        <div class="d-flex align-items-center">
+            <span class="badge me-2" style="background-color: {{ categoria.color }}; width: 20px; height: 20px; border-radius: 50%;"></span>
+            <div>
+                <strong>{{ categoria.nombre }}</strong>
+                <br>
+                <small class="text-muted">{{ categoria.get_tipo_display }}</small>
+            </div>
+        </div>
+        <div>
+            <button type="button" 
+                    class="btn btn-sm btn-outline-danger" 
+                    onclick="eliminarCategoria({{ categoria.id }}, '{{ categoria.nombre|escapejs }}')"
+                    title="Eliminar categoría">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info" id="no-categorias-message">
+    <i class="fas fa-info-circle"></i> No tienes categorías creadas aún.
+    <button type="button" class="btn btn-sm btn-primary mt-2" onclick="abrirModalCategoria()">
+        Crear primera categoría
+    </button>
+</div>
+{% endif %}
+
+<script>
+// Obtener el CSRF token de las cookies
+function getCookie(name) {
+    const cookieString = document.cookie;
+    if (!cookieString) return null;
+    
+    const cookies = cookieString.split(';');
+    for (let cookie of cookies) {
+        cookie = cookie.trim();
+        if (cookie.startsWith(name + '=')) {
+            return decodeURIComponent(cookie.substring(name.length + 1));
+        }
+    }
+    return null;
+}
+
+function eliminarCategoria(id, nombre) {
+    if (!confirm(`¿Estás seguro de que quieres eliminar la categoría "${nombre}"?\n\nEsta acción no se puede deshacer.`)) {
+        return;
+    }
+    
+    const csrftoken = getCookie('csrftoken') || 
+                    document.querySelector('[name=csrfmiddlewaretoken]')?.value ||
+                    document.querySelector('input[name="csrfmiddlewaretoken"]')?.value;
+    
+    if (!csrftoken) {
+        mostrarMensaje('error', 'No se pudo obtener el token de seguridad. Recarga la página.');
+        return;
+    }
+    
+    // Construir la URL correctamente
+    const url = `${window.location.origin}/categorias/eliminar/ajax/${id}/`;
+    
+    console.log('Eliminando categoría:', id, 'URL:', url);
+    
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrftoken,
+            'X-Requested-With': 'XMLHttpRequest',
+            'Content-Type': 'application/json'
+        },
+        credentials: 'same-origin'
+    })
+    .then(response => {
+        console.log('Response status:', response.status);
+        if (!response.ok) {
+            return response.json().then(err => {
+                throw new Error(err.message || `Error ${response.status}: ${response.statusText}`);
+            }).catch(() => {
+                throw new Error(`Error ${response.status}: ${response.statusText}`);
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Response data:', data);
+        if (data.success) {
+            mostrarMensaje('success', data.message);
+            
+            // Remover el elemento de la lista
+            const itemToRemove = document.getElementById(`categoria-${id}`);
+            if (itemToRemove) {
+                itemToRemove.style.transition = 'opacity 0.3s, height 0.3s, margin 0.3s';
+                itemToRemove.style.opacity = '0';
+                itemToRemove.style.height = '0';
+                itemToRemove.style.margin = '0';
+                itemToRemove.style.overflow = 'hidden';
+                
+                setTimeout(() => {
+                    itemToRemove.remove();
+                    
+                    // Verificar si quedan categorías
+                    const remainingItems = document.querySelectorAll('.list-group-item');
+                    if (remainingItems.length === 0) {
+                        const listGroup = document.querySelector('.list-group');
+                        if (listGroup) {
+                            listGroup.innerHTML = `
+                                <div class="alert alert-info" id="no-categorias-message">
+                                    <i class="fas fa-info-circle"></i> No tienes categorías creadas aún.
+                                    <button type="button" class="btn btn-sm btn-primary mt-2" onclick="abrirModalCategoria()">
+                                        Crear primera categoría
+                                    </button>
+                                </div>
+                            `;
+                        }
+                    }
+                }, 300);
+            }
+            
+            // Recargar datos después de 1 segundo (no recargar toda la página)
+            setTimeout(() => {
+                if (typeof abrirModalGestionarCategorias === 'function') {
+                    abrirModalGestionarCategorias();
+                } else if (window.opener && typeof window.opener.abrirModalGestionarCategorias === 'function') {
+                    window.opener.abrirModalGestionarCategorias();
+                }
+            }, 1000);
+            
+        } else {
+            mostrarMensaje('error', data.message || 'Error al eliminar la categoría');
+        }
+    })
+    .catch(error => {
+        console.error('Error completo:', error);
+        mostrarMensaje('error', error.message || 'Error al eliminar la categoría. Verifica la consola para más detalles.');
+    });
+}
+
+function mostrarMensaje(tipo, mensaje) {
+    const alertClass = tipo === 'success' ? 'alert-success' : 'alert-danger';
+    const icon = tipo === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle';
+    
+    const alert = document.createElement('div');
+    alert.className = `alert ${alertClass} alert-dismissible fade show`;
+    alert.innerHTML = `
+        <i class="fas ${icon}"></i> ${mensaje}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    const modalBody = document.getElementById('modalGestionarCategoriasBody');
+    if (modalBody) {
+        modalBody.insertBefore(alert, modalBody.firstChild);
+        
+        setTimeout(() => {
+            if (alert.parentNode) {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            }
+        }, 5000);
+    } else {
+        // Mostrar notificación en la página principal si Bootstrap está disponible
+        if (typeof bootstrap !== 'undefined') {
+            const container = document.body;
+            container.insertBefore(alert, container.firstChild);
+            
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                }
+            }, 5000);
+        } else {
+            // Fallback simple
+            alert(mensaje);
+        }
+    }
+}
+</script>

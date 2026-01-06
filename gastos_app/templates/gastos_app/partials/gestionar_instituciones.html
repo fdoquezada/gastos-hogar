@@ -1,0 +1,107 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="mb-0">🏦 Gestionar Instituciones</h5>
+    <button type="button" class="btn btn-sm btn-primary" onclick="abrirModalInstitucion()">
+        <i class="fas fa-plus"></i> Nueva Institución
+    </button>
+</div>
+
+{% if instituciones %}
+<div class="list-group">
+    {% for institucion in instituciones %}
+    <div class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+            <strong>{{ institucion.nombre }}</strong>
+            {% if institucion.descripcion %}
+            <br>
+            <small class="text-muted">{{ institucion.descripcion|truncatewords:10 }}</small>
+            {% endif %}
+        </div>
+        <div>
+            <button type="button" 
+                    class="btn btn-sm btn-outline-danger" 
+                    onclick="eliminarInstitucion({{ institucion.id }}, '{{ institucion.nombre }}')"
+                    title="Eliminar institución">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info">
+    <i class="fas fa-info-circle"></i> No tienes instituciones creadas aún.
+    <button type="button" class="btn btn-sm btn-primary mt-2" onclick="abrirModalInstitucion()">
+        Crear primera institución
+    </button>
+</div>
+{% endif %}
+
+<script>
+function eliminarInstitucion(id, nombre) {
+    if (!confirm(`¿Estás seguro de que quieres eliminar la institución "${nombre}"?\n\nEsta acción no se puede deshacer.`)) {
+        return;
+    }
+    
+    // Obtener el CSRF token de las cookies
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken') || document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+    
+    fetch(`{% url 'eliminar_institucion_ajax' 0 %}`.replace('0', id), {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrftoken,
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Mostrar mensaje de éxito
+            mostrarMensaje('success', data.message);
+            // Recargar el modal de gestión
+            setTimeout(() => {
+                abrirModalGestionarInstituciones();
+            }, 1000);
+        } else {
+            mostrarMensaje('error', data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        mostrarMensaje('error', 'Error al eliminar la institución');
+    });
+}
+
+function mostrarMensaje(tipo, mensaje) {
+    const alertClass = tipo === 'success' ? 'alert-success' : 'alert-danger';
+    const icon = tipo === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle';
+    
+    const alert = document.createElement('div');
+    alert.className = `alert ${alertClass} alert-dismissible fade show`;
+    alert.innerHTML = `
+        <i class="fas ${icon}"></i> ${mensaje}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    const modalBody = document.getElementById('modalGestionarInstitucionesBody');
+    modalBody.insertBefore(alert, modalBody.firstChild);
+    
+    // Auto-ocultar después de 3 segundos
+    setTimeout(() => {
+        alert.remove();
+    }, 3000);
+}
+</script>

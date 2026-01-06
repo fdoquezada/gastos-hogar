@@ -46,8 +46,14 @@ class TransaccionForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         
         if self.usuario:
+            # Configurar queryset y hacer campos opcionales (permitir valor vacío)
             self.fields['categoria'].queryset = Categoria.objects.filter(usuario=self.usuario)
+            self.fields['categoria'].required = False
+            self.fields['categoria'].empty_label = "--------- (Ninguna)"
+            
             self.fields['institucion_ahorro'].queryset = InstitucionAhorro.objects.filter(usuario=self.usuario)
+            self.fields['institucion_ahorro'].required = False
+            self.fields['institucion_ahorro'].empty_label = "--------- (Ninguna)"
         
         # Establecer fecha actual por defecto
         if not self.instance.pk:

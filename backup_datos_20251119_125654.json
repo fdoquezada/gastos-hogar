@@ -1,0 +1,849 @@
+[
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$600000$HcVwSB9olOYtNbIvaope2N$h6IZjLKyP7axXA7taZHVk/s3EBkNpnaCUE1cmCP8EiY=",
+    "last_login": "2025-11-18T19:49:44.575Z",
+    "is_superuser": false,
+    "username": "fernando",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-10-30T14:23:16.984Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$600000$jtdpVxqxXHG7T3u115DVQa$yeY/5VY1TbMbrh7VolCiJjKSQGFlnR2YDPGBNeV69c8=",
+    "last_login": "2025-10-30T16:44:48.618Z",
+    "is_superuser": true,
+    "username": "agustin",
+    "first_name": "",
+    "last_name": "",
+    "email": "fdoquezada@hotmail.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2025-10-30T16:05:04.907Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$600000$Nyi2Mv1eK0DkjebGfmGeR4$98mFIlq6YkTZxqBG6XJduiah53rOhWCCPi8V2rga6O4=",
+    "last_login": "2025-11-18T17:45:24.238Z",
+    "is_superuser": true,
+    "username": "andres",
+    "first_name": "",
+    "last_name": "",
+    "email": "fdoquezada@hotmail.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2025-11-06T17:19:48.089Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "gastos_app.categoria",
+  "pk": 1,
+  "fields": {
+    "nombre": "Salario",
+    "tipo": "INGRESO",
+    "usuario": [
+      "fernando"
+    ],
+    "color": "#10b981"
+  }
+},
+{
+  "model": "gastos_app.categoria",
+  "pk": 2,
+  "fields": {
+    "nombre": "Inversiones",
+    "tipo": "INGRESO",
+    "usuario": [
+      "fernando"
+    ],
+    "color": "#047857"
+  }
+},
+{
+  "model": "gastos_app.categoria",
+  "pk": 3,
+  "fields": {
+    "nombre": "Freelance",
+    "tipo": "INGRESO",
+    "usuario": [
+      "fernando"
+    ],
+    "color": "#047857"
+  }
+},
+{
+  "model": "gastos_app.categoria",
+  "pk": 5,
+  "fields": {
+    "nombre": "Anticipo Salario",
+    "tipo": "INGRESO",
+    "usuario": [
+      "agustin"
+    ],
+    "color": "#3bd8f7"
+  }
+},
+{
+  "model": "gastos_app.categoria",
+  "pk": 6,
+  "fields": {
+    "nombre": "fondos Mutuos",
+    "tipo": "INGRESO",
+    "usuario": [
+      "agustin"
+    ],
+    "color": "#3b82f6"
+  }
+},
+{
+  "model": "gastos_app.categoria",
+  "pk": 7,
+  "fields": {
+    "nombre": "bencina",
+    "tipo": "EGRESO",
+    "usuario": [
+      "fernando"
+    ],
+    "color": "#f73b3b"
+  }
+},
+{
+  "model": "gastos_app.categoria",
+  "pk": 8,
+  "fields": {
+    "nombre": "Alimentación",
+    "tipo": "EGRESO",
+    "usuario": [
+      "fernando"
+    ],
+    "color": "#3bf773"
+  }
+},
+{
+  "model": "gastos_app.categoria",
+  "pk": 9,
+  "fields": {
+    "nombre": "Pago de Arriendo de habitacion",
+    "tipo": "EGRESO",
+    "usuario": [
+      "fernando"
+    ],
+    "color": "#f73b73"
+  }
+},
+{
+  "model": "gastos_app.categoria",
+  "pk": 10,
+  "fields": {
+    "nombre": "Internet Hogar",
+    "tipo": "EGRESO",
+    "usuario": [
+      "fernando"
+    ],
+    "color": "#f73b73"
+  }
+},
+{
+  "model": "gastos_app.categoria",
+  "pk": 11,
+  "fields": {
+    "nombre": "pago de agua potable",
+    "tipo": "EGRESO",
+    "usuario": [
+      "fernando"
+    ],
+    "color": "#3b82f6"
+  }
+},
+{
+  "model": "gastos_app.categoria",
+  "pk": 12,
+  "fields": {
+    "nombre": "Pago de Chilquinta",
+    "tipo": "EGRESO",
+    "usuario": [
+      "fernando"
+    ],
+    "color": "#3b82f6"
+  }
+},
+{
+  "model": "gastos_app.categoria",
+  "pk": 13,
+  "fields": {
+    "nombre": "Pago Entel",
+    "tipo": "EGRESO",
+    "usuario": [
+      "fernando"
+    ],
+    "color": "#3b82f6"
+  }
+},
+{
+  "model": "gastos_app.categoria",
+  "pk": 14,
+  "fields": {
+    "nombre": "Ahorro",
+    "tipo": "INGRESO",
+    "usuario": [
+      "fernando"
+    ],
+    "color": "#3b82f6"
+  }
+},
+{
+  "model": "gastos_app.institucionahorro",
+  "pk": 1,
+  "fields": {
+    "nombre": "Banco Falabella",
+    "descripcion": "fondos mutuos",
+    "usuario": [
+      "agustin"
+    ]
+  }
+},
+{
+  "model": "gastos_app.institucionahorro",
+  "pk": 2,
+  "fields": {
+    "nombre": "Banco Falabella",
+    "descripcion": "Fondo Mutuo",
+    "usuario": [
+      "fernando"
+    ]
+  }
+},
+{
+  "model": "gastos_app.institucionahorro",
+  "pk": 3,
+  "fields": {
+    "nombre": "Banco MercadoPago",
+    "descripcion": "cuenta vista",
+    "usuario": [
+      "fernando"
+    ]
+  }
+},
+{
+  "model": "gastos_app.transaccion",
+  "pk": 1,
+  "fields": {
+    "usuario": [
+      "agustin"
+    ],
+    "tipo": "INGRESO",
+    "monto": "100000.00",
+    "descripcion": "anticipo de Sueldo Noviembre",
+    "glosa": "",
+    "categoria": 5,
+    "institucion_ahorro": null,
+    "fecha": "2025-10-30",
+    "fecha_creacion": "2025-10-30T16:55:45.274Z",
+    "es_recurrente": false,
+    "frecuencia_recurrencia": null,
+    "es_traspaso": false,
+    "traspaso_destino": null
+  }
+},
+{
+  "model": "gastos_app.transaccion",
+  "pk": 2,
+  "fields": {
+    "usuario": [
+      "agustin"
+    ],
+    "tipo": "AHORRO",
+    "monto": "13292.00",
+    "descripcion": "abono inicial de fondos Mutuos",
+    "glosa": "saldo que tenia en fondo mutuo al día de hoy n",
+    "categoria": 6,
+    "institucion_ahorro": 1,
+    "fecha": "2025-10-30",
+    "fecha_creacion": "2025-10-30T19:46:29.580Z",
+    "es_recurrente": false,
+    "frecuencia_recurrencia": null,
+    "es_traspaso": false,
+    "traspaso_destino": null
+  }
+},
+{
+  "model": "gastos_app.transaccion",
+  "pk": 3,
+  "fields": {
+    "usuario": [
+      "fernando"
+    ],
+    "tipo": "INGRESO",
+    "monto": "446083.00",
+    "descripcion": "Sueldo de Octubre",
+    "glosa": "sueldo de Octubre falta ingresar anticipo",
+    "categoria": 1,
+    "institucion_ahorro": null,
+    "fecha": "2025-11-05",
+    "fecha_creacion": "2025-11-06T17:06:26.658Z",
+    "es_recurrente": false,
+    "frecuencia_recurrencia": null,
+    "es_traspaso": false,
+    "traspaso_destino": null
+  }
+},
+{
+  "model": "gastos_app.transaccion",
+  "pk": 4,
+  "fields": {
+    "usuario": [
+      "fernando"
+    ],
+    "tipo": "EGRESO",
+    "monto": "20000.00",
+    "descripcion": "pago de bencina a Cristobal",
+    "glosa": "bencina para traslado de regreso a san Felipe",
+    "categoria": 7,
+    "institucion_ahorro": null,
+    "fecha": "2025-11-05",
+    "fecha_creacion": "2025-11-06T17:08:13.544Z",
+    "es_recurrente": false,
+    "frecuencia_recurrencia": null,
+    "es_traspaso": false,
+    "traspaso_destino": null
+  }
+},
+{
+  "model": "gastos_app.transaccion",
+  "pk": 5,
+  "fields": {
+    "usuario": [
+      "fernando"
+    ],
+    "tipo": "EGRESO",
+    "monto": "8000.00",
+    "descripcion": "pago de almuerzo mío $4000 y $4000 Rafael",
+    "glosa": "recordar a Rafael que me transfiera los $4000",
+    "categoria": 8,
+    "institucion_ahorro": null,
+    "fecha": "2025-11-05",
+    "fecha_creacion": "2025-11-06T17:11:03.176Z",
+    "es_recurrente": false,
+    "frecuencia_recurrencia": null,
+    "es_traspaso": false,
+    "traspaso_destino": null
+  }
+},
+{
+  "model": "gastos_app.transaccion",
+  "pk": 7,
+  "fields": {
+    "usuario": [
+      "fernando"
+    ],
+    "tipo": "EGRESO",
+    "monto": "270000.00",
+    "descripcion": "arriendo concepción",
+    "glosa": "pago de arriendo de habitación de Agustín Quezada con falabella",
+    "categoria": 9,
+    "institucion_ahorro": null,
+    "fecha": "2025-11-06",
+    "fecha_creacion": "2025-11-06T17:25:07.032Z",
+    "es_recurrente": false,
+    "frecuencia_recurrencia": null,
+    "es_traspaso": false,
+    "traspaso_destino": null
+  }
+},
+{
+  "model": "gastos_app.transaccion",
+  "pk": 8,
+  "fields": {
+    "usuario": [
+      "fernando"
+    ],
+    "tipo": "EGRESO",
+    "monto": "15984.00",
+    "descripcion": "pago de boleta movistar 228661597 con mach",
+    "glosa": "pago de internet mi casa",
+    "categoria": 10,
+    "institucion_ahorro": null,
+    "fecha": "2025-11-06",
+    "fecha_creacion": "2025-11-06T17:39:27.652Z",
+    "es_recurrente": false,
+    "frecuencia_recurrencia": null,
+    "es_traspaso": false,
+    "traspaso_destino": null
+  }
+},
+{
+  "model": "gastos_app.transaccion",
+  "pk": 9,
+  "fields": {
+    "usuario": [
+      "fernando"
+    ],
+    "tipo": "EGRESO",
+    "monto": "18461.00",
+    "descripcion": "Boleta Chilquinta 117859092",
+    "glosa": "Pago de saldo anterior",
+    "categoria": 12,
+    "institucion_ahorro": null,
+    "fecha": "2025-11-06",
+    "fecha_creacion": "2025-11-06T18:02:35.474Z",
+    "es_recurrente": false,
+    "frecuencia_recurrencia": null,
+    "es_traspaso": false,
+    "traspaso_destino": null
+  }
+},
+{
+  "model": "gastos_app.transaccion",
+  "pk": 10,
+  "fields": {
+    "usuario": [
+      "fernando"
+    ],
+    "tipo": "EGRESO",
+    "monto": "11990.00",
+    "descripcion": "Pago de boleta Entel 478113542",
+    "glosa": "Pago de boleta Móvil de Agustín mach",
+    "categoria": 13,
+    "institucion_ahorro": null,
+    "fecha": "2025-11-06",
+    "fecha_creacion": "2025-11-06T18:05:40.366Z",
+    "es_recurrente": false,
+    "frecuencia_recurrencia": null,
+    "es_traspaso": false,
+    "traspaso_destino": null
+  }
+},
+{
+  "model": "gastos_app.transaccion",
+  "pk": 11,
+  "fields": {
+    "usuario": [
+      "fernando"
+    ],
+    "tipo": "AHORRO",
+    "monto": "13300.00",
+    "descripcion": "deposito inicial de ahorro fondo mutuo",
+    "glosa": "ahorro de fondo mutuo Falabella",
+    "categoria": 14,
+    "institucion_ahorro": 2,
+    "fecha": "2025-11-01",
+    "fecha_creacion": "2025-11-06T18:30:03.557Z",
+    "es_recurrente": false,
+    "frecuencia_recurrencia": null,
+    "es_traspaso": false,
+    "traspaso_destino": null
+  }
+},
+{
+  "model": "gastos_app.transaccion",
+  "pk": 12,
+  "fields": {
+    "usuario": [
+      "fernando"
+    ],
+    "tipo": "EGRESO",
+    "monto": "13343.00",
+    "descripcion": "compra de alimentos Lider San Felipe",
+    "glosa": "agregar a ítems de alimentación",
+    "categoria": 8,
+    "institucion_ahorro": null,
+    "fecha": "2025-11-07",
+    "fecha_creacion": "2025-11-18T17:47:57.536Z",
+    "es_recurrente": false,
+    "frecuencia_recurrencia": null,
+    "es_traspaso": false,
+    "traspaso_destino": null
+  }
+},
+{
+  "model": "gastos_app.transaccion",
+  "pk": 13,
+  "fields": {
+    "usuario": [
+      "fernando"
+    ],
+    "tipo": "EGRESO",
+    "monto": "1550.00",
+    "descripcion": "compra de alimentos calle larga",
+    "glosa": "",
+    "categoria": 8,
+    "institucion_ahorro": null,
+    "fecha": "2025-11-07",
+    "fecha_creacion": "2025-11-18T17:48:45.125Z",
+    "es_recurrente": false,
+    "frecuencia_recurrencia": null,
+    "es_traspaso": false,
+    "traspaso_destino": null
+  }
+},
+{
+  "model": "gastos_app.transaccion",
+  "pk": 14,
+  "fields": {
+    "usuario": [
+      "fernando"
+    ],
+    "tipo": "EGRESO",
+    "monto": "42640.00",
+    "descripcion": "compra de alimentos lider.cl",
+    "glosa": "",
+    "categoria": 8,
+    "institucion_ahorro": null,
+    "fecha": "2025-11-10",
+    "fecha_creacion": "2025-11-18T17:49:31.619Z",
+    "es_recurrente": false,
+    "frecuencia_recurrencia": null,
+    "es_traspaso": false,
+    "traspaso_destino": null
+  }
+},
+{
+  "model": "gastos_app.transaccion",
+  "pk": 15,
+  "fields": {
+    "usuario": [
+      "fernando"
+    ],
+    "tipo": "EGRESO",
+    "monto": "5402.00",
+    "descripcion": "compra de fiambres los muñoz Los Andes",
+    "glosa": "",
+    "categoria": 8,
+    "institucion_ahorro": null,
+    "fecha": "2025-11-18",
+    "fecha_creacion": "2025-11-18T17:50:48.499Z",
+    "es_recurrente": false,
+    "frecuencia_recurrencia": null,
+    "es_traspaso": false,
+    "traspaso_destino": null
+  }
+},
+{
+  "model": "gastos_app.transaccion",
+  "pk": 16,
+  "fields": {
+    "usuario": [
+      "fernando"
+    ],
+    "tipo": "AHORRO",
+    "monto": "5000.00",
+    "descripcion": "fondo mutuo",
+    "glosa": "",
+    "categoria": 14,
+    "institucion_ahorro": 2,
+    "fecha": "2025-11-10",
+    "fecha_creacion": "2025-11-18T17:52:06.202Z",
+    "es_recurrente": false,
+    "frecuencia_recurrencia": null,
+    "es_traspaso": false,
+    "traspaso_destino": null
+  }
+},
+{
+  "model": "gastos_app.transaccion",
+  "pk": 17,
+  "fields": {
+    "usuario": [
+      "fernando"
+    ],
+    "tipo": "EGRESO",
+    "monto": "1250.00",
+    "descripcion": "compra de alimentos jumbo San felipe",
+    "glosa": "",
+    "categoria": 8,
+    "institucion_ahorro": null,
+    "fecha": "2025-11-10",
+    "fecha_creacion": "2025-11-18T17:53:06.737Z",
+    "es_recurrente": false,
+    "frecuencia_recurrencia": null,
+    "es_traspaso": false,
+    "traspaso_destino": null
+  }
+},
+{
+  "model": "contacto.contacto",
+  "pk": 1,
+  "fields": {
+    "nombre": "fernandpp",
+    "email": "conttrolgestion@cacciuttolo.cl",
+    "asunto": "servicio solictado",
+    "mensaje": "hola me conatcto cotigo apra soloco",
+    "fecha_envio": "2025-10-30T14:31:54.198Z"
+  }
+},
+{
+  "model": "contacto.contacto",
+  "pk": 2,
+  "fields": {
+    "nombre": "fernandpp",
+    "email": "controlgestion@cacciuttolo.cl",
+    "asunto": "servicio solictado",
+    "mensaje": "asdasdas",
+    "fecha_envio": "2025-10-30T14:38:26.949Z"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "admin",
+    "model": "logentry"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "auth",
+    "model": "permission"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "auth",
+    "model": "group"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "auth",
+    "model": "user"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "contenttypes",
+    "model": "contenttype"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "sessions",
+    "model": "session"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "gastos_app",
+    "model": "categoria"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "gastos_app",
+    "model": "institucionahorro"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "gastos_app",
+    "model": "transaccion"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "gastos_app",
+    "model": "objetivoahorro"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "gastos_app",
+    "model": "alerta"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "gastos_app",
+    "model": "presupuestomensual"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "fields": {
+    "app_label": "contacto",
+    "model": "contacto"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "getb5qtzvb1xnw1e3idr0ojco7baq652",
+  "fields": {
+    "session_data": ".eJxVjMsOwiAQRf-FtSFAh5dL934DGWCQqoGktCvjv2uTLnR7zzn3xQJuaw3boCXMmZ2ZZKffLWJ6UNtBvmO7dZ56W5c58l3hBx382jM9L4f7d1Bx1G-tUamEFP3koSjtnJSkyfiEqsAEXlhBaOQkS_G2gIVcwDiZQTgnhHXs_QHUEzb1:1vLRhw:o5m1n0de1mWszGN7AzE9QJAoLdpA4gTwicyUCzSVAuI",
+    "expire_date": "2025-12-02T19:49:44.578Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "r5kixxbqas0rt8dhazk59ex24i599ph5",
+  "fields": {
+    "session_data": ".eJxVjMsOwiAQRf-FtSFAh5dL934DGWCQqoGktCvjv2uTLnR7zzn3xQJuaw3boCXMmZ2ZZKffLWJ6UNtBvmO7dZ56W5c58l3hBx382jM9L4f7d1Bx1G-tUamEFP3koSjtnJSkyfiEqsAEXlhBaOQkS_G2gIVcwDiZQTgnhHXs_QHUEzb1:1vLRh2:vZBT0qJK1AHsaHa9HAlUs9vf-QSEsHwQcw61-QyQOUU",
+    "expire_date": "2025-12-02T19:48:48.788Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "vaa4grw0b83br6b4g9dwtb4jz32bvubq",
+  "fields": {
+    "session_data": ".eJxVjMsOwiAQRf-FtSFAh5dL934DGWCQqoGktCvjv2uTLnR7zzn3xQJuaw3boCXMmZ2ZZKffLWJ6UNtBvmO7dZ56W5c58l3hBx382jM9L4f7d1Bx1G-tUamEFP3koSjtnJSkyfiEqsAEXlhBaOQkS_G2gIVcwDiZQTgnhHXs_QHUEzb1:1vLPmk:RBlMhpGl6vHKZXnV_mZdKfqBXiYX0do1j0K80gqcyAs",
+    "expire_date": "2025-12-02T17:46:34.467Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "w6fj539gc7uyogy38txsb3dddab33dyk",
+  "fields": {
+    "session_data": ".eJxVjEEOwiAQRe_C2pBBKBSX7j0Dmc4MUjUlKe3KeHfbpAvd_vfef6uE61LS2mROI6uLOqvT7zYgPWXaAT9wuldNdVrmcdC7og_a9K2yvK6H-3dQsJWtdiQUQ3AeAK34HjhmA5YMZYGOO8wEhliiceIjkttU7A1ByJksiPp8AexsOFk:1vEVlY:0SPJFZ3hMjYJPdY3juh3hFvjgOvGv4lmTkf5f0f8TeE",
+    "expire_date": "2025-11-13T16:44:48.623Z"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 1,
+  "fields": {
+    "action_time": "2025-10-30T16:38:22.611Z",
+    "user": [
+      "agustin"
+    ],
+    "content_type": [
+      "gastos_app",
+      "categoria"
+    ],
+    "object_id": "1",
+    "object_repr": "Salario (INGRESO)",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 2,
+  "fields": {
+    "action_time": "2025-10-30T16:40:22.744Z",
+    "user": [
+      "agustin"
+    ],
+    "content_type": [
+      "gastos_app",
+      "categoria"
+    ],
+    "object_id": "2",
+    "object_repr": "Inversiones (INGRESO)",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 3,
+  "fields": {
+    "action_time": "2025-10-30T16:40:44.942Z",
+    "user": [
+      "agustin"
+    ],
+    "content_type": [
+      "gastos_app",
+      "categoria"
+    ],
+    "object_id": "3",
+    "object_repr": "Freelance (INGRESO)",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 4,
+  "fields": {
+    "action_time": "2025-10-30T16:45:16.163Z",
+    "user": [
+      "agustin"
+    ],
+    "content_type": [
+      "gastos_app",
+      "categoria"
+    ],
+    "object_id": "4",
+    "object_repr": "Anticipo (INGRESO)",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 5,
+  "fields": {
+    "action_time": "2025-11-06T17:20:33.873Z",
+    "user": [
+      "andres"
+    ],
+    "content_type": [
+      "gastos_app",
+      "categoria"
+    ],
+    "object_id": "9",
+    "object_repr": "Pago de Arriendo de habitacion (EGRESO)",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Tipo\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 6,
+  "fields": {
+    "action_time": "2025-11-06T17:21:15.276Z",
+    "user": [
+      "andres"
+    ],
+    "content_type": [
+      "gastos_app",
+      "categoria"
+    ],
+    "object_id": "4",
+    "object_repr": "Anticipo (INGRESO)",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 7,
+  "fields": {
+    "action_time": "2025-11-18T17:45:45.477Z",
+    "user": [
+      "andres"
+    ],
+    "content_type": [
+      "gastos_app",
+      "categoria"
+    ],
+    "object_id": "8",
+    "object_repr": "Alimentación (EGRESO)",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Tipo\"]}}]"
+  }
+}
+]

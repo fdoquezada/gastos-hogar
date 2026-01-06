@@ -186,6 +186,46 @@
         </div>
     </div>
 
+    <!-- Modal para gestionar categorías -->
+    <div class="modal fade" id="modalGestionarCategorias" tabindex="-1" aria-labelledby="modalGestionarCategoriasLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalGestionarCategoriasLabel">📋 Gestionar Categorías</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modalGestionarCategoriasBody">
+                    <!-- El contenido se cargará aquí via AJAX -->
+                    <div class="text-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para gestionar instituciones -->
+    <div class="modal fade" id="modalGestionarInstituciones" tabindex="-1" aria-labelledby="modalGestionarInstitucionesLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalGestionarInstitucionesLabel">🏦 Gestionar Instituciones</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modalGestionarInstitucionesBody">
+                    <!-- El contenido se cargará aquí via AJAX -->
+                    <div class="text-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     {% block scripts %}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -252,6 +292,50 @@
             setTimeout(() => {
                 window.location.reload();
             }, 500);
+        }
+
+        // Función para abrir modal de gestión de categorías (disponible globalmente)
+        window.abrirModalGestionarCategorias = function abrirModalGestionarCategorias() {
+            fetch("{% url 'gestionar_categorias_modal' %}")
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error en la respuesta del servidor');
+                    }
+                    return response.text();
+                })
+                .then(html => {
+                    document.getElementById('modalGestionarCategoriasBody').innerHTML = html;
+                    var modalElement = document.getElementById('modalGestionarCategorias');
+                    var modal = new bootstrap.Modal(modalElement);
+                    modal.show();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('modalGestionarCategoriasBody').innerHTML = 
+                        '<div class="alert alert-danger">Error al cargar las categorías.</div>';
+                });
+        }
+
+        // Función para abrir modal de gestión de instituciones (disponible globalmente)
+        window.abrirModalGestionarInstituciones = function abrirModalGestionarInstituciones() {
+            fetch("{% url 'gestionar_instituciones_modal' %}")
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error en la respuesta del servidor');
+                    }
+                    return response.text();
+                })
+                .then(html => {
+                    document.getElementById('modalGestionarInstitucionesBody').innerHTML = html;
+                    var modalElement = document.getElementById('modalGestionarInstituciones');
+                    var modal = new bootstrap.Modal(modalElement);
+                    modal.show();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('modalGestionarInstitucionesBody').innerHTML = 
+                        '<div class="alert alert-danger">Error al cargar las instituciones.</div>';
+                });
         }
 
         // Inicializar tooltips

@@ -117,6 +117,86 @@ def dashboard(request):
     
     return render(request, 'gastos_app/dashboard.html', context)
 
+# ==================== GRÁFICO DE GASTOS POR CATEGORÍA ====================
+@login_required
+def grafico_gastos_categoria(request):
+    """Vista para mostrar gráfico detallado de gastos por categoría"""
+    hoy = timezone.now()
+    mes_actual = hoy.replace(day=1)
+    mes_siguiente = (mes_actual + timedelta(days=32)).replace(day=1)
+    
+    # Obtener gastos por categoría del mes actual
+    gastos_por_categoria = Transaccion.objects.filter(
+        usuario=request.user,
+        tipo='EGRESO',
+        fecha__gte=mes_actual,
+        fecha__lt=mes_siguiente
+    ).values('categoria__nombre', 'categoria__color').annotate(
+        total=Sum('monto')
+    ).order_by('-total')
+    
+    # Preparar datos para el gráfico
+    categorias = []
+    montos = []
+    colores = []
+    gastos_con_porcentaje = []
+    
+    for gasto in gastos_por_categoria:
+        categorias.append(gasto['categoria__nombre'] or 'Sin categoría')
+        montos.append(float(gasto['total']))
+        colores.append(gasto['categoria__color'] or '#6c757d')
+    
+    # Calcular total general
+    total_general = sum(montos)
+    
+    # Calcular porcentajes y preparar datos para la tabla
+    for gasto in gastos_por_categoria:
+        monto = float(gasto['total'])
+        porcentaje = (monto / total_general * 100) if total_general > 0 else 0
+        gastos_con_porcentaje.append({
+            'categoria__nombre': gasto['categoria__nombre'] or 'Sin categoría',
+            'categoria__color': gasto['categoria__color'] or '#6c757d',
+            'total': monto,
+            'porcentaje': porcentaje
+        })
+    
+    # Calcular promedio por categoría
+    promedio_categoria = (total_general / len(gastos_por_categoria)) if gastos_por_categoria else 0
+    
+    # Obtener también datos de meses anteriores para comparación (últimos 6 meses)
+    meses_comparacion = []
+    for i in range(6):
+        fecha_mes = (mes_actual - timedelta(days=32*i)).replace(day=1)
+        fecha_siguiente = (fecha_mes + timedelta(days=32)).replace(day=1)
+        
+        total_mes = Transaccion.objects.filter(
+            usuario=request.user,
+            tipo='EGRESO',
+            fecha__gte=fecha_mes,
+            fecha__lt=fecha_siguiente
+        ).aggregate(Sum('monto'))['monto__sum'] or 0
+        
+        meses_comparacion.append({
+            'mes': fecha_mes.strftime('%b %Y'),
+            'total': float(total_mes)
+        })
+    
+    meses_comparacion.reverse()  # Ordenar cronológicamente
+    
+    context = {
+        'categorias': json.dumps(categorias),
+        'montos': json.dumps(montos),
+        'colores': json.dumps(colores),
+        'total_general': total_general,
+        'promedio_categoria': promedio_categoria,
+        'mes_actual': mes_actual.strftime('%B %Y'),
+        'meses_comparacion': json.dumps([m['mes'] for m in meses_comparacion]),
+        'totales_meses': json.dumps([m['total'] for m in meses_comparacion]),
+        'gastos_por_categoria': gastos_con_porcentaje,
+    }
+    
+    return render(request, 'gastos_app/grafico_gastos_categoria.html', context)
+
 # ==================== GESTIÓN DE TRANSACCIONES ====================
 @login_required
 def agregar_transaccion(request):
@@ -180,7 +260,10 @@ def editar_transaccion(request, id):
     else:
         form = TransaccionForm(instance=transaccion, usuario=request.user)
     
-    return render(request, 'gastos_app/editar_transaccion.html', {'form': form})
+    return render(request, 'gastos_app/editar_transaccion.html', {
+        'form': form,
+        'transaccion': transaccion
+    })
 
 @login_required
 def eliminar_transaccion(request, id):
@@ -243,34 +326,46 @@ def gestionar_presupuestos(request):
     """Vista para gestionar presupuestos mensuales"""
     hoy = timezone.now()
     mes_actual = hoy.replace(day=1)
+    is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
     
-    if request.method == 'POST':
-        form = PresupuestoForm(request.POST, usuario=request.user)
-        if form.is_valid():
-            presupuesto = form.save(commit=False)
-            presupuesto.usuario = request.user
-            presupuesto.mes = mes_actual  # ← IMPORTANTE: Asignar el mes actual
-            presupuesto.save()
-            
-            # ✅ DETECTAR SI ES PETICIÓN AJAX
-            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                return JsonResponse({
-                    'success': True,
-                    'message': '✅ Presupuesto agregado correctamente'
-                })
+    try:
+        if request.method == 'POST':
+            form = PresupuestoForm(request.POST, usuario=request.user)
+            if form.is_valid():
+                presupuesto = form.save(commit=False)
+                presupuesto.usuario = request.user
+                presupuesto.mes = mes_actual  # ← IMPORTANTE: Asignar el mes actual
+                presupuesto.save()
+                
+                # ✅ DETECTAR SI ES PETICIÓN AJAX
+                if is_ajax:
+                    return JsonResponse({
+                        'success': True,
+                        'message': '✅ Presupuesto agregado correctamente'
+                    })
+                else:
+                    messages.success(request, '✅ Presupuesto agregado correctamente')
+                    return redirect('presupuestos')
             else:
-                messages.success(request, '✅ Presupuesto agregado correctamente')
-                return redirect('presupuestos')
+                # ✅ MANEJAR ERRORES DE VALIDACIÓN EN AJAX
+                if is_ajax:
+                    return JsonResponse({
+                        'success': False,
+                        'message': '❌ Error en el formulario',
+                        'errors': form.errors
+                    })
         else:
-            # ✅ MANEJAR ERRORES DE VALIDACIÓN EN AJAX
-            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                return JsonResponse({
-                    'success': False,
-                    'message': '❌ Error en el formulario',
-                    'errors': form.errors
-                })
-    else:
-        form = PresupuestoForm(usuario=request.user)
+            form = PresupuestoForm(usuario=request.user)
+    except Exception as e:
+        # ✅ Asegurar que siempre devolvamos JSON en peticiones AJAX
+        if is_ajax:
+            return JsonResponse({
+                'success': False,
+                'message': f'❌ Error del servidor: {str(e)}'
+            }, status=500)
+        else:
+            # Para peticiones no AJAX, dejar que Django maneje el error normalmente
+            raise
     
     # Obtener presupuestos del mes actual
     presupuestos = PresupuestoMensual.objects.filter(
@@ -707,3 +802,66 @@ def agregar_institucion_modal(request):
         form = InstitucionAhorroForm(usuario=request.user)
     
     return render(request, 'gastos_app/partials/form_institucion.html', {'form': form})
+
+# ==================== VISTAS AJAX PARA ELIMINAR ====================
+@login_required
+def eliminar_categoria_ajax(request, categoria_id):
+    """Vista AJAX para eliminar categoría"""
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'message': 'Método no permitido'}, status=405)
+    
+    categoria = get_object_or_404(Categoria, id=categoria_id, usuario=request.user)
+    
+    # Verificar que no hay transacciones usando esta categoría
+    transacciones_con_categoria = Transaccion.objects.filter(categoria=categoria, usuario=request.user)
+    
+    if transacciones_con_categoria.exists():
+        return JsonResponse({
+            'success': False, 
+            'message': '❌ No puedes eliminar esta categoría porque tiene transacciones asociadas'
+        })
+    
+    categoria_nombre = categoria.nombre
+    categoria.delete()
+    
+    return JsonResponse({
+        'success': True, 
+        'message': f'✅ Categoría "{categoria_nombre}" eliminada correctamente'
+    })
+
+@login_required
+def eliminar_institucion_ajax(request, institucion_id):
+    """Vista AJAX para eliminar institución"""
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'message': 'Método no permitido'}, status=405)
+    
+    institucion = get_object_or_404(InstitucionAhorro, id=institucion_id, usuario=request.user)
+    
+    # Verificar que no hay transacciones usando esta institución
+    transacciones_con_institucion = Transaccion.objects.filter(institucion_ahorro=institucion, usuario=request.user)
+    
+    if transacciones_con_institucion.exists():
+        return JsonResponse({
+            'success': False, 
+            'message': '❌ No puedes eliminar esta institución porque tiene transacciones asociadas'
+        })
+    
+    institucion_nombre = institucion.nombre
+    institucion.delete()
+    
+    return JsonResponse({
+        'success': True, 
+        'message': f'✅ Institución "{institucion_nombre}" eliminada correctamente'
+    })
+
+@login_required
+def gestionar_categorias_modal(request):
+    """Vista para mostrar modal de gestión de categorías"""
+    categorias = Categoria.objects.filter(usuario=request.user).order_by('tipo', 'nombre')
+    return render(request, 'gastos_app/partials/gestionar_categorias.html', {'categorias': categorias})
+
+@login_required
+def gestionar_instituciones_modal(request):
+    """Vista para mostrar modal de gestión de instituciones"""
+    instituciones = InstitucionAhorro.objects.filter(usuario=request.user).order_by('nombre')
+    return render(request, 'gastos_app/partials/gestionar_instituciones.html', {'instituciones': instituciones})

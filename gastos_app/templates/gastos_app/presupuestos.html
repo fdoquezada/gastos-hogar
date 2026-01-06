@@ -313,7 +313,19 @@
         })
         .then(response => {
             console.log('🔍 DEBUG: Respuesta recibida - Status:', response.status);
-            return response.json();
+            console.log('🔍 DEBUG: Content-Type:', response.headers.get('Content-Type'));
+            
+            // Verificar si la respuesta es JSON
+            const contentType = response.headers.get('Content-Type');
+            if (contentType && contentType.includes('application/json')) {
+                return response.json();
+            } else {
+                // Si no es JSON, intentar leer como texto para debug
+                return response.text().then(text => {
+                    console.error('🔍 DEBUG: Respuesta no es JSON:', text.substring(0, 200));
+                    throw new Error('El servidor devolvió una respuesta no JSON. Status: ' + response.status);
+                });
+            }
         })
         .then(data => {
             console.log('🔍 DEBUG: Respuesta JSON:', data);
@@ -344,7 +356,7 @@
         })
         .catch(error => {
             console.error('🔍 DEBUG: Error en la petición:', error);
-            showToast('Error', 'Error de conexión con el servidor', 'error');
+            showToast('Error', 'Error de conexión con el servidor: ' + error.message, 'error');
             submitButton.innerHTML = originalText;
             submitButton.disabled = false;
         });

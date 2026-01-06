@@ -20,8 +20,14 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="{{ form.tipo.id_for_label }}" class="form-label">Tipo</label>
-                                {{ form.tipo }}
+                                <label for="{{ form.tipo.id_for_label }}" class="form-label">Tipo <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    {{ form.tipo }}
+                                    <button type="button" class="btn btn-outline-secondary" onclick="document.getElementById('{{ form.tipo.id_for_label }}').value = ''" title="Limpiar selección">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                <small class="form-text text-muted">Puedes cambiar la selección en cualquier momento</small>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -41,12 +47,23 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <label for="{{ form.categoria.id_for_label }}" class="form-label">Categoría</label>
-                                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="abrirModalCategoria()">
-                                        <i class="fas fa-plus"></i> Nueva
-                                    </button>
+                                    <label for="{{ form.categoria.id_for_label }}" class="form-label">Categoría (opcional)</label>
+                                    <div>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary me-1" onclick="limpiarCampo('{{ form.categoria.id_for_label }}')" title="Limpiar categoría">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-info me-1" onclick="abrirModalGestionarCategorias()" title="Gestionar categorías">
+                                            <i class="fas fa-cog"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="abrirModalCategoria()">
+                                            <i class="fas fa-plus"></i> Nueva
+                                        </button>
+                                    </div>
                                 </div>
-                                {{ form.categoria }}
+                                <div class="input-group">
+                                    {{ form.categoria }}
+                                </div>
+                                <small class="form-text text-muted">Puedes seleccionar, cambiar o dejar vacío</small>
                                 {% if form.categoria.field.queryset.count == 0 %}
                                 <div class="alert alert-warning mt-2">
                                     <i class="fas fa-exclamation-triangle"></i>
@@ -76,12 +93,23 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <label for="{{ form.institucion_ahorro.id_for_label }}" class="form-label">Institución Ahorro</label>
-                                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="abrirModalInstitucion()">
-                                        <i class="fas fa-plus"></i> Nueva
-                                    </button>
+                                    <label for="{{ form.institucion_ahorro.id_for_label }}" class="form-label">Institución Ahorro (opcional)</label>
+                                    <div>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary me-1" onclick="limpiarCampo('{{ form.institucion_ahorro.id_for_label }}')" title="Limpiar institución">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-info me-1" onclick="abrirModalGestionarInstituciones()" title="Gestionar instituciones">
+                                            <i class="fas fa-cog"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="abrirModalInstitucion()">
+                                            <i class="fas fa-plus"></i> Nueva
+                                        </button>
+                                    </div>
                                 </div>
-                                {{ form.institucion_ahorro }}
+                                <div class="input-group">
+                                    {{ form.institucion_ahorro }}
+                                </div>
+                                <small class="form-text text-muted">Puedes seleccionar, cambiar o dejar vacío</small>
                                 {% if form.institucion_ahorro.field.queryset.count == 0 %}
                                 <div class="alert alert-warning mt-2">
                                     <i class="fas fa-exclamation-triangle"></i>
@@ -104,4 +132,52 @@
         </div>
     </div>
 </div>
+
+<script>
+// Función para limpiar campos select
+function limpiarCampo(fieldId) {
+    const campo = document.getElementById(fieldId);
+    if (campo) {
+        campo.value = '';
+        // Disparar evento change para que otros scripts puedan reaccionar
+        campo.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+}
+
+// Hacer que los campos select sean más claramente editables
+document.addEventListener('DOMContentLoaded', function() {
+    const selects = ['{{ form.tipo.id_for_label }}', '{{ form.categoria.id_for_label }}', '{{ form.institucion_ahorro.id_for_label }}'];
+    
+    selects.forEach(selectId => {
+        const select = document.getElementById(selectId);
+        if (select) {
+            // Permitir que el campo sea claramente editable
+            select.style.cursor = 'pointer';
+            
+            // Agregar clase para mejor visualización
+            select.classList.add('form-select');
+            
+            // Asegurar que el campo no esté deshabilitado
+            select.removeAttribute('readonly');
+            select.removeAttribute('disabled');
+        }
+    });
+    
+    // Recargar página cuando se cierren los modales de gestión para actualizar selects
+    const modalGestionarCategorias = document.getElementById('modalGestionarCategorias');
+    const modalGestionarInstituciones = document.getElementById('modalGestionarInstituciones');
+    
+    if (modalGestionarCategorias) {
+        modalGestionarCategorias.addEventListener('hidden.bs.modal', function () {
+            window.location.reload();
+        });
+    }
+    
+    if (modalGestionarInstituciones) {
+        modalGestionarInstituciones.addEventListener('hidden.bs.modal', function () {
+            window.location.reload();
+        });
+    }
+});
+</script>
 {% endblock %}
