@@ -865,3 +865,10 @@ def gestionar_instituciones_modal(request):
     """Vista para mostrar modal de gestión de instituciones"""
     instituciones = InstitucionAhorro.objects.filter(usuario=request.user).order_by('nombre')
     return render(request, 'gastos_app/partials/gestionar_instituciones.html', {'instituciones': instituciones})
+
+# ==================== VISTAS DE ERROR ====================
+def error_404(request, exception):
+    return render(request, '404.html', status=404)
+
+def error_500(request):
+    return render(request, '500.html', status=500)

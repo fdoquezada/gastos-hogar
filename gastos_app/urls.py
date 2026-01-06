@@ -56,3 +56,7 @@ urlpatterns = [
     path('instituciones/eliminar/ajax/<int:institucion_id>/', views.eliminar_institucion_ajax, name='eliminar_institucion_ajax'),
     path('instituciones/gestionar/modal/', views.gestionar_instituciones_modal, name='gestionar_instituciones_modal'),
 ]
+
+# Configuración de manejadores de errores
+handler404 = 'gastos_app.views.error_404'
+handler500 = 'gastos_app.views.error_500'
